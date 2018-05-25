@@ -127,7 +127,11 @@ def add_column():
 
     print("adding tweet_sentiment columns ...")
     cursor = conn.cursor()
-    cursor.execute("""ALTER TABLE tweet ADD tweet_sentiment INTEGER DEFAULT 0;""")
+    try:
+        cursor.execute("""ALTER TABLE tweet ADD tweet_sentiment INTEGER DEFAULT 0;""")
+        conn.commit()
+    except sqlite3.Error as msg:
+        print("Command skipped: ", msg)
     print("columns tweet_sentiment added\n")
 
 
@@ -143,7 +147,7 @@ def select_data(query = None):
                 print(row)
         else:
             for row in cursor.execute("""{};""".format(query)):
-                print(row,"\n")
+                print(row)
     except Exception as msg:
         print("Command skipped: ", msg)
 
@@ -241,37 +245,34 @@ def main():
 
     # удаление таблицы, для проверки
     drop_table()
-#
-#    # удаление данных, для проверки
-#    # delete_all_data()
-#
-#    # создание таблицы
+
+    # удаление данных, для проверки
+    # delete_all_data()
+
+    # создание таблицы
     create_table()
-#
-#    # загрузка твитов
+
+    # загрузка твитов
     load_tweet(file_name=tweets_file)
-#
-#    # добавление колонки tweet_sentiment
+
+    # добавление колонки tweet_sentiment
     add_column()
-#
-#    # Нормализация БД
-    normalize_db(file_name="normalize.sql")
+
+    # Нормализация БД
+#    normalize_db(file_name="normalize.sql")
 #    select_data(query = """select * from temp_tweet order by cnt desc limit 100""")
-#    name, tweet_text, country_code, display_url, lang, created_at, location
+
 #    select_data(query = """select distinct * from tweet limit 5""")
-#
-#    # расчет значений tweet_sentiment
-#    update_tweet_sentiment()
+
+    # расчет значений tweet_sentiment
+    update_tweet_sentiment()
 
     # проверка tweet_sentiment
-#    test_updated_tweet_sentiment()
+    test_updated_tweet_sentiment()
 
     conn.close()
 
 
 if __name__ == "__main__":
     main()
-
-
-
 
